@@ -22,7 +22,7 @@ TrelloPowerUp.initialize({
                   // this as well if we needed to do something async first
                   return {
                     text: "Dynamic " + (Math.random() * 100).toFixed(0).toString(),
-                    icon: "./images/icon.svg",
+                    icon: BLACK_ROCKET_ICON,
                     color: "green",
                     refresh: 10, // in seconds
                   };
