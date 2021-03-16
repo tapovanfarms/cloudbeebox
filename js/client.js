@@ -17,21 +17,21 @@ TrelloPowerUp.initialize({
             let tstr = d.toLocaleTimeString().substring(0,5);
             
             return [
-              {
-                // Dynamic badges can have their function rerun
-                // after a set number of seconds defined by refresh.
-                // Minimum of 10 seconds.
-                dynamic: function () {
-                  // we could also return a Promise that resolves to
-                  // this as well if we needed to do something async first
-                  return {
-                    text: "Dynamic " + (Math.random() * 100).toFixed(0).toString(),
-                    icon: BLACK_ROCKET_ICON,
-                    color: "green",
-                    refresh: 10, // in seconds
-                  };
-                },
-              },
+              // {
+              //   // Dynamic badges can have their function rerun
+              //   // after a set number of seconds defined by refresh.
+              //   // Minimum of 10 seconds.
+              //   dynamic: function () {
+              //     // we could also return a Promise that resolves to
+              //     // this as well if we needed to do something async first
+              //     return {
+              //       text: "Dynamic " + (Math.random() * 100).toFixed(0).toString(),
+              //       icon: BLACK_ROCKET_ICON,
+              //       color: "green",
+              //       refresh: 10, // in seconds
+              //     };
+              //   },
+              // },
               {
                 // It's best to use static badges unless you need your
                 // badges to refresh.
