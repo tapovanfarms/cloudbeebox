@@ -2,7 +2,7 @@
 
 var Promise = TrelloPowerUp.Promise;
 
-var BLACK_ROCKET_ICON = '../img/outline_calendar_today_black_24dp.png';
+var BLACK_ROCKET_ICON = 'https://mayankbhagya.github.io/cloudbeebox/img/calendar_today_black_48dp.svg';
 
 TrelloPowerUp.initialize({
     "card-badges": function (t, opts) {
