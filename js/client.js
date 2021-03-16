@@ -10,8 +10,12 @@ TrelloPowerUp.initialize({
         return t
           .card("id")
           .get("id")
-          .then(function (cardName) {
-            console.log("We just loaded the card name for fun: " + cardName);
+          .then(function (cardId) {
+            console.log("Card Id: " + cardId);
+            let d = new Date(1000*parseInt(idBoard.substring(0,8),16));
+            let dstr = d.toLocaleDateString(undefined, {"month":"short", "day":"numeric"});
+            let tstr = d.toLocaleTimeString().substring(0,5);
+            
             return [
               {
                 // Dynamic badges can have their function rerun
@@ -32,7 +36,7 @@ TrelloPowerUp.initialize({
                 // It's best to use static badges unless you need your
                 // badges to refresh.
                 // You can mix and match between static and dynamic
-                text: "Static",
+                text: dstr + ", " + tstr,
                 icon: BLACK_ROCKET_ICON, // for card front badges only
                 color: null,
               },
