@@ -12,7 +12,7 @@ TrelloPowerUp.initialize({
           .get("id")
           .then(function (cardId) {
             console.log("Card Id: " + cardId);
-            let d = new Date(1000*parseInt(idBoard.substring(0,8),16));
+            let d = new Date(1000*parseInt(cardId.substring(0,8),16));
             let dstr = d.toLocaleDateString(undefined, {"month":"short", "day":"numeric"});
             let tstr = d.toLocaleTimeString().substring(0,5);
             
