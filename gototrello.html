@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Goto Trello</title>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XEYXFJNWP6"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-XEYXFJNWP6');
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let TRELLO_URL = "https://trello.com/en/add-card?source=CloudBeebox&mode=popup&name=Enter%20title%20here&desc=Write%20your%20observations%20here&idList="
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            window.location.replace(TRELLO_URL + userId);
+        </script>
+    </body>
+</html>
