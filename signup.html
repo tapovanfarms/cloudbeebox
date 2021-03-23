@@ -7,65 +7,120 @@
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
             crossorigin="anonymous"></script>
         <script src="https://api.trello.com/1/client.js?key=aa5c6d871d68ef0b66857ef2bb7a2ba5"></script>
+        <script src="./js/qrcode.min.js"></script>
     </head>
     <body>
-        <button type="button" id="getlists" onclick="getLists()" disabled>Get Lists</button>
+        <div style="float:left; margin-right: 10px;">
+            <label for="listName">Select a beebox and click the button below:</label><br/>
+            <div id="listContainer"></div>
+            <button onclick="generateQR()" style="margin-top: 10px">Generate QR</button>
+        </div>
+        <div style="float:left">
+            <div id="qrcode"></div>
+            <div id="qrname" style="width:100%; text-align:center"></div>
+        </div>
+        
         <script type="text/javascript">
-
+            var lists = [];
+            var qrcode = null;
+            function renderLists() {
+                var html = "";
+                for (var i = 0; i < lists.length; i++) {
+                    var tag = "<input type='radio' name='listName' value='" + i + "'>" + lists[i]['name'] + "</input><br/>";
+                    html += tag;
+                }
+                document.getElementById("listContainer").innerHTML = html;
+            }
+            function urlBuilder(beekeeperName, listName, listId) {
+                let BASE_URL = "https://tapovanfarms.github.io/cloudbeebox/gototrello.html";
+                let UTM_SRC = "?utm_source=" + listName.toLowerCase();
+                let UTM_MED = "&utm_medium=boxqr";
+                let UTM_CAMPAIGN = "&utm_campaign=" + beekeeperName.toLowerCase();
+                let USER_ID = "&userId=" + listId;
+                return BASE_URL + UTM_SRC + UTM_MED + UTM_CAMPAIGN + USER_ID;
+            }
+            function generateQR() {
+                listNames = document.getElementsByName('listName');
+                var selectedIdx = -1;
+                for (const listName of listNames) {
+                    if (listName.checked) {
+                        selectedIdx = parseInt(listName.value);
+                        break;
+                    }
+                }
+                if (selectedIdx == -1) {
+                    console.log("Nothing selected...")
+                    return;
+                } 
+                var item = lists[selectedIdx];
+                // if (qrcode) {
+                //     qrcode.clear();
+                // }
+                document.getElementById('qrcode').innerHTML = "";
+                qrcode = new QRCode("qrcode", {
+                    text: urlBuilder('radhesh', item['name'], item['id']),
+                    width: 300,
+                    height: 300,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+                document.getElementById('qrname').innerText = item['name'];
+            }
+            // process lists
+            var forList = function(item) {
+                if (item['closed']) {
+                    return;
+                }
+                else {
+                    // console.log(item['name'], item['id']);
+                    lists.push(item);
+                }
+            };
+            // LIST api handlers
+            var listsSuccess = function(data) {
+                console.log("Lists received");
+                data.forEach(forList);
+                renderLists();
+            };
+            var listsFailure = function() {
+                console.log("Lists failed");
+            };
+            // process boards
+            var forBoard = function(item) {
+                if (item['closed']) {
+                    return;
+                }
+                else {
+                    console.log('Getting lists from', item['name'], item['id']);
+                    window.Trello.get('/boards/' + item['id'] + '/lists', listsSuccess, listsFailure);
+                }
+            };
+            // BOARD api handlers
+            var boardsSuccess = function(data) {
+                console.log('Boards received.');
+                data.map(forBoard);
+            };
+            var boardsFailure = function() {
+                console.log('Boards failed');
+            };
+            // AUTH api handlers   
             var authenticationSuccess = function() {
-                console.log('Successful authentication');
-                document.getElementById("getlists").disabled = false;
+                console.log('Successful authentication. Getting boards...');
+                window.Trello.get('/members/me/boards', boardsSuccess, boardsFailure);
             };
             var authenticationFailure = function() {
                 console.log('Failed authentication');
             };
+            // Start auth flow
             window.Trello.authorize({
                 type: 'redirect',
                 name: 'Cloud Beebox',
-                scope: {
-                    read: 'true',
-                    write: 'true' },
+                scope: {read: 'true', write: 'false'},
                 expiration: 'never',
                 success: authenticationSuccess,
                 error: authenticationFailure
             });
-            function getLists() {
-                var forList = function(item) {
-                    if (item['closed']) {
-                        return;
-                    }
-                    else {
-                        console.log(item['name'], item['id']);
-                    }
-                }
-                var listsSuccess = function(data) {
-                    console.log("Lists received");
-                    data.forEach(forList);
-                }
-                var listsFailure = function() {
-                    console.log("Lists failed");
-                }
-                var forBoard = function(item) {
-                    if (item['closed']) {
-                        return;
-                    }
-                    else {
-                        console.log('Getting lists from', item['name'], item['id']);
-                        window.Trello.get('/boards/' + item['id'] + '/lists', listsSuccess, listsFailure);
-                    }
-                }
-                var boardsSuccess = function(data) {
-                    console.log('Boards received');
-                    data.map(forBoard);
-                }
-                var boardsFailure = function() {
-                    console.log('Boards failed');
-                }
-                
-                document.getElementById("getlists").disabled = true;
-                console.log("Getting boards");
-                window.Trello.get('/members/me/boards', boardsSuccess, boardsFailure);
-            }
         </script>
     </body>
 </html>
