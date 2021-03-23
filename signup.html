@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sign up</title>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+        <script src="https://api.trello.com/1/client.js?key=aa5c6d871d68ef0b66857ef2bb7a2ba5"></script>
+    </head>
+    <body>
+        <button type="button" id="getlists" onclick="getLists()" disabled>Get Lists</button>
+        <script type="text/javascript">
+
+            var authenticationSuccess = function() {
+                console.log('Successful authentication');
+                document.getElementById("getlists").disabled = false;
+            };
+            var authenticationFailure = function() {
+                console.log('Failed authentication');
+            };
+            window.Trello.authorize({
+                type: 'redirect',
+                name: 'Cloud Beebox',
+                scope: {
+                    read: 'true',
+                    write: 'true' },
+                expiration: 'never',
+                success: authenticationSuccess,
+                error: authenticationFailure
+            });
+            function getLists() {
+                var forList = function(item) {
+                    if (item['closed']) {
+                        return;
+                    }
+                    else {
+                        console.log(item['name'], item['id']);
+                    }
+                }
+                var listsSuccess = function(data) {
+                    console.log("Lists received");
+                    data.forEach(forList);
+                }
+                var listsFailure = function() {
+                    console.log("Lists failed");
+                }
+                var forBoard = function(item) {
+                    if (item['closed']) {
+                        return;
+                    }
+                    else {
+                        console.log('Getting lists from', item['name'], item['id']);
+                        window.Trello.get('/boards/' + item['id'] + '/lists', listsSuccess, listsFailure);
+                    }
+                }
+                var boardsSuccess = function(data) {
+                    console.log('Boards received');
+                    data.map(forBoard);
+                }
+                var boardsFailure = function() {
+                    console.log('Boards failed');
+                }
+                
+                document.getElementById("getlists").disabled = true;
+                console.log("Getting boards");
+                window.Trello.get('/members/me/boards', boardsSuccess, boardsFailure);
+            }
+        </script>
+    </body>
+</html>
