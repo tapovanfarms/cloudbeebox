@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Sign up</title>
+        <title>QR Generator</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script
             src="https://code.jquery.com/jquery-3.3.1.min.js"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -10,14 +11,15 @@
         <script src="./js/qrcode.min.js"></script>
     </head>
     <body>
-        <div style="float:left; margin-right: 10px;">
+        <div style="float:left; margin:10px; border: solid 1px black;">
             <label for="listName">Select a beebox and click the button below:</label><br/>
-            <div id="listContainer"></div>
-            <button onclick="generateQR()" style="margin-top: 10px">Generate QR</button>
+            <div id="listContainer" style="margin-top:10px"></div>
+            <button onclick="generateQR()" style="margin-top:10px; width:100%">Generate QR</button>
         </div>
-        <div style="float:left">
-            <div id="qrcode"></div>
+        <div style="float:left; margin: 10px">
             <div id="qrname" style="width:100%; text-align:center"></div>
+            <div id="qrcode" style="margin-top:10px"></div>
+            <div style="width:100%; margin-top:10px; text-align:center"><a id="qrlink"></a></div>
         </div>
         
         <script type="text/javascript">
@@ -65,7 +67,14 @@
                     colorLight : "#ffffff",
                     correctLevel : QRCode.CorrectLevel.H
                 });
+                //set name
                 document.getElementById('qrname').innerText = item['name'];
+                //set download link
+                var cnvs = document.getElementById('qrcode').getElementsByTagName('canvas');
+                var link = document.getElementById('qrlink');
+                link.download = item['name'] + '.png';
+                link.href = cnvs[0].toDataURL("image/png");
+                link.innerText = 'Download';
             }
             // process lists
             var forList = function(item) {
