@@ -9,19 +9,33 @@
             crossorigin="anonymous"></script>
         <script src="https://api.trello.com/1/client.js?key=aa5c6d871d68ef0b66857ef2bb7a2ba5"></script>
         <script src="./js/qrcode.min.js"></script>
+        <style>
+            button {
+                background-color: #4CAF50; /* Green */
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+            }
+        </style>
     </head>
     <body>
-        <div style="float:left; margin:10px; border: solid 1px black;">
-            <label for="listName">Select a beebox and click the button below:</label><br/>
-            <div id="listContainer" style="margin-top:10px"></div>
-            <button onclick="generateQR()" style="margin-top:10px; width:100%">Generate QR</button>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap;">
+            <div style="float:left; margin:10px; border: solid 1px #eee;">
+                <label for="listName">Select a beebox and click the button below:</label><br/>
+                <div id="listContainer" style="margin-top:10px"></div>
+                <button onclick="generateQR()" style="margin-top:10px; width:100%">Generate QR</button>
+            </div>
+            <div style="float:left; margin:10px">
+                <u><div id="qrname" style="max-width:100%; text-align:center"></div></u>
+                <div id="qrcode" style="margin:10px"></div>
+                <div style="max-width:100%; margin-top:10px; text-align:center"><a id="qrlink"></a></div>
+            </div>
         </div>
-        <div style="float:left; margin: 10px">
-            <div id="qrname" style="width:100%; text-align:center"></div>
-            <div id="qrcode" style="margin-top:10px"></div>
-            <div style="width:100%; margin-top:10px; text-align:center"><a id="qrlink"></a></div>
-        </div>
-        
+
         <script type="text/javascript">
             var lists = [];
             var qrcode = null;
