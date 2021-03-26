@@ -10,6 +10,9 @@
         <script src="https://api.trello.com/1/client.js?key=aa5c6d871d68ef0b66857ef2bb7a2ba5"></script>
         <script src="./js/qrcode.min.js"></script>
         <style>
+            body {
+                font-size: 1.5em;
+            }
             button {
                 background-color: #4CAF50; /* Green */
                 border: none;
@@ -24,25 +27,28 @@
     </head>
     <body>
         <div style="display:flex; justify-content:center; flex-wrap:wrap;">
-            <div style="float:left; margin:10px; border: solid 1px #eee;">
-                <label for="listName">Select a beebox and click the button below:</label><br/>
-                <div id="listContainer" style="margin-top:10px"></div>
-                <button onclick="generateQR()" style="margin-top:10px; width:100%">Generate QR</button>
+            <div style="margin:10px">
+                <u><div id="qrname" style="max-width:100%; text-align:center">QR Generator</div></u>
+                <div id="qrcode" style="min-height: 300px; background-color:#eee;"></div>
+                <div style="max-width:100%; margin-top:10px; text-align:center"><a id="qrlink">...</a></div>
+                <button onclick="generateQR()" style="margin-top:10px; width:300px;">Generate QR</button>
             </div>
-            <div style="float:left; margin:10px">
-                <u><div id="qrname" style="max-width:100%; text-align:center"></div></u>
-                <div id="qrcode" style="margin:10px"></div>
-                <div style="max-width:100%; margin-top:10px; text-align:center"><a id="qrlink"></a></div>
+            <div style="margin:10px; border: solid 1px #eee;">
+                <label for="listName">Select a beebox and click the button:</label><br/>
+                <div id="listContainer" style="margin-top:10px"></div>
             </div>
         </div>
 
         <script type="text/javascript">
             var lists = [];
             var qrcode = null;
+            function selectItem(event) {
+                console.dir(event);
+            }
             function renderLists() {
                 var html = "";
                 for (var i = 0; i < lists.length; i++) {
-                    var tag = "<input type='radio' name='listName' value='" + i + "'>" + lists[i]['name'] + "</input><br/>";
+                    var tag = "<input type='radio' name='listName' value='" + i + "' id='" + i + "'><label for='" + i + "'>" + lists[i]['name'] + "</label><br/>";
                     html += tag;
                 }
                 document.getElementById("listContainer").innerHTML = html;
