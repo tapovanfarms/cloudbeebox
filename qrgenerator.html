@@ -13,6 +13,13 @@
             body {
                 font-size: 1.5em;
             }
+            .navbar {
+                position:sticky; 
+                top:0; 
+                background-color:#4CAF50;
+                color:white; 
+                padding:10px;
+            }
             button {
                 background-color: #4CAF50; /* Green */
                 border: none;
@@ -22,16 +29,21 @@
                 text-decoration: none;
                 display: inline-block;
                 font-size: 16px;
+                width: 300px;
+                margin-top: 10px;
             }
         </style>
     </head>
-    <body>
+    <body style="margin:0px">
+        <div class="navbar">
+            <img style="display:block; height:3em; margin:auto" src="img/cloudbeebox.png">
+        </div>
         <div style="display:flex; justify-content:center; flex-wrap:wrap;">
             <div style="margin:10px">
                 <u><div id="qrname" style="max-width:100%; text-align:center">QR Generator</div></u>
                 <div id="qrcode" style="min-height: 300px; background-color:#eee;"></div>
                 <div style="max-width:100%; margin-top:10px; text-align:center"><a id="qrlink">...</a></div>
-                <button onclick="generateQR()" style="margin-top:10px; width:300px;">Generate QR</button>
+                <button onclick="generateQR()">Generate QR</button>
             </div>
             <div style="margin:10px; border: solid 1px #eee;">
                 <label for="listName">Select a beebox and click the button:</label><br/>
