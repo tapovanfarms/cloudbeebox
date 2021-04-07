@@ -126,8 +126,8 @@
                         correctLevel : QRCode.CorrectLevel.H
                     });
                     nameDiv = document.createElement('div');
-                    qrName = item['name'] + " (" + item['boardName'] + ")";
-                    nameDiv.innerText = qrName;
+                    qrName = item['name'] + "<br>(" + item['boardName'] + ")";
+                    nameDiv.innerHTML = qrName;
                     nameDiv.style.textAlign = "center";
                     qrCell.appendChild(nameDiv);
                 }
