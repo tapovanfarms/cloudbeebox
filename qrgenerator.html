@@ -11,7 +11,7 @@
         <script src="./js/qrcode.min.js"></script>
         <style>
             body {
-                font-size: 1.5em;
+                font-size: 1em;
             }
             .navbar {
                 position:sticky; 
@@ -29,13 +29,17 @@
                 text-decoration: none;
                 display: inline-block;
                 font-size: 16px;
+                max-width: 300px;
                 width: 100%;
-                margin-top: 10px;
+                margin: 10px auto;
                 cursor: pointer;
             }
             #listSelect {
                 font-size: 1em;
                 margin:10px;
+            }
+            td {
+                padding: 5px;
             }
         </style>
     </head>
@@ -44,30 +48,28 @@
             <img style="display:block; height:3em; margin:auto" src="img/cloudbeebox.png">
         </div>
         <div style="text-align: center; text-decoration: underline;" id="fullname"></div>
-        <div style="display:flex; justify-content:center; flex-wrap:wrap;">
-            <div style="margin:10px">
-                <div id="qrname" style="max-width:100%; text-align:center">QR Generator</div>
-                <div id="qrcode" style="min-height: 300px; background-color:#eee;"></div>
-                <div style="max-width:100%; margin-top:10px; text-align:center"><a id="qrlink">...</a></div>
-                <button onclick="generateQR()">Generate QR</button>
-                <button onclick="window.print()">Print</button>
-            </div>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap;" id="tabList">
             <div style="margin:10px; border: solid 1px #eee;">
-                <label for="listName">Select a beebox and click the button:</label><br/>
+                <label for="listName">Select beeboxes and click Generate QRs:</label><br/>
                 <!-- <select id="listSelect" name="listSelect"></select> -->
                 <div id="listContainer" style="margin-top:10px"></div>
+                <button onclick="generateQR()">Generate QRs</button>
             </div>
+        </div>
+        <div style="display:none; justify-content:center; flex-direction: column;" id="tabResult">
+            <button onclick="window.print()">Print</button>
+            <table style="border:solid 1px gray; margin:auto;"  id="qrcodeTable"></table>
+            <button onclick="resetQR()">Back</button>
         </div>
 
         <script type="text/javascript">
             var lists = [];
-            var qrcode = null;
             var username = '';
 
             function renderLists() {
                 var html = "";
                 for (var i = 0; i < lists.length; i++) {
-                    var tag = "<input type='radio' name='listName' value='" + i + "' id='" + i + 
+                    var tag = "<input type='checkbox' name='listName' value='" + i + "' id='" + i + 
                         "'><label for='" + i + "'>" + lists[i]['name'] + " (" + lists[i]['boardName'] + ")" + 
                         "</label><br/>";
                     html += tag;
@@ -76,43 +78,66 @@
             }
             function urlBuilder(beekeeperName, listName, listId) {
                 let BASE_URL = "https://tapovanfarms.github.io/cloudbeebox/gototrello.html";
-                let UTM_SRC = "?utm_source=" + listName.toLowerCase();
+                let UTM_SRC = "?utm_source=" + listName.toLowerCase().replace(' ', '_');
                 let UTM_MED = "&utm_medium=boxqr";
                 let UTM_CAMPAIGN = "&utm_campaign=" + beekeeperName.toLowerCase();
                 let USER_ID = "&userId=" + listId;
                 return BASE_URL + UTM_SRC + UTM_MED + UTM_CAMPAIGN + USER_ID;
             }
-            function generateQR() {
+            function generateQR() {                
                 listNames = document.getElementsByName('listName');
-                var selectedIdx = -1;
+                var selectedIds = [];
                 for (const listName of listNames) {
                     if (listName.checked) {
-                        selectedIdx = parseInt(listName.value);
-                        break;
+                        selectedIds.push(parseInt(listName.value));
                     }
                 }
-                if (selectedIdx == -1) {
+                if (selectedIds.length < 1) {
                     console.log("Nothing selected...")
                     return;
-                } 
-                var item = lists[selectedIdx];
-                document.getElementById('qrcode').innerHTML = "";
-                qrcode = new QRCode("qrcode", {
-                    text: urlBuilder(username, item['name'], item['id']),
-                    width: 300,
-                    height: 300,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-                //set name
-                document.getElementById('qrname').innerText = item['name'] + " (" + item['boardName'] + ")";
-                //set download link
-                var cnvs = document.getElementById('qrcode').getElementsByTagName('canvas');
-                var link = document.getElementById('qrlink');
-                link.download = item['name'] + '.png';
-                link.href = cnvs[0].toDataURL("image/png");
-                link.innerText = 'Download';
+                }
+
+                var qrTable = document.getElementById('qrcodeTable');
+                var qrRow = null;
+                var qrCell = null;
+                var qrDiv = null;
+                var nameDiv = null;
+                var qrId = "";
+                var qrName = "";
+
+                console.log(i, selectedIds);
+                qrTable.innerHTML = "";
+                for (var i in selectedIds) {
+                    var item = lists[selectedIds[i]];
+                    if (i%3 === 0) {
+                        qrRow = qrTable.insertRow(i/3);
+                    }
+                    qrId = "qrcode" + i.toString();
+                    qrCell = qrRow.insertCell(i%3);
+                    qrDiv = document.createElement('div');
+                    qrDiv.id = qrId;
+                    qrCell.appendChild(qrDiv);
+                    new QRCode(qrId, {
+                        text: urlBuilder(username, item['name'], item['id']),
+                        width: 200,
+                        height: 200,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+                    nameDiv = document.createElement('div');
+                    qrName = item['name'] + " (" + item['boardName'] + ")";
+                    nameDiv.innerText = qrName;
+                    nameDiv.style.textAlign = "center";
+                    qrCell.appendChild(nameDiv);
+                }
+
+                document.getElementById('tabResult').style.display = 'flex';
+                document.getElementById('tabList').style.display = 'none';
+            }
+            function resetQR() {
+                document.getElementById('tabResult').style.display = 'none';
+                document.getElementById('tabList').style.display = 'flex';
             }
             // LIST handlers
             function listCallbackGenerator(boardName) {
